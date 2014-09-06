@@ -1,7 +1,7 @@
 WeCenterMobile-Api
 ==================
 
-WeCenter(2.5.16) 移动客户端 APi (2014-9-6)
+WeCenter(2.5.16) 移动客户端 Api (2014-9-6)
 
 ####Api安装说明
 
