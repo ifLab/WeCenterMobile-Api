@@ -45,4 +45,4 @@ PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei
 
 Copyright 2014 [emtx.com](http://emtx.com/)&[iflab.org](http://iflab.org/)
 
-Released under the MIT license.
+Released under the MIT license
