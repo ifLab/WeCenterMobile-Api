@@ -147,7 +147,7 @@
 
 > 图释：
 
-![image](https://raw.githubusercontent.com/ifLab/FMobile-Design/master/api/at_user.png)
+![image](https://raw.githubusercontent.com/ifLab/WeCenterMobile-Api/master/docs/img/at_user.png)
 
 
 ## 发布回答评论 && 对回答评论的回复 
