@@ -11,6 +11,8 @@ WeCenter(2.5.16) 移动客户端 Api (2014-9-6)
 
 - app/api/
 
+- models/
+
 > 2.配置文件为 api/lib/config.php，需要配置的信息：
 
 - 数据库信息
