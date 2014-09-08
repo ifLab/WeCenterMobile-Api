@@ -49,7 +49,7 @@ https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Topic.md
 
 https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Q%26A.md
 
-##文章相关接口
+##文章和评论相关接口
 
 https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Article.md
 
