@@ -19,7 +19,25 @@ WeCenter(2.5.16) 移动客户端 Api (2014-9-6)
 
 - 回复内容图片所在目录，一般是：http://www.example.com/uploads/answer/
 
-> 3.接口详情文档，请查阅：https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API.md
+> 3.接口大致分为八类：
+
+- 用户账号相关接口
+
+- 发布相关接口
+
+- 发现接口
+
+- 首页接口
+
+- 用户中心相关列表接口
+
+- 话题相关接口
+
+- 问题和回答相关接口
+
+- 文章和评论相关接口
+
+详情文档，请查阅：https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API.md
 
 ==================
 
