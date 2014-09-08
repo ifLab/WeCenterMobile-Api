@@ -19,7 +19,7 @@ WeCenter(2.5.16) 移动客户端 Api (2014-9-6)
 
 - 回复内容图片所在目录，一般是：http://www.example.com/uploads/answer/
 
-> 3.接口详情文档，请查阅：https://github.com/ifLab/FMobile-Design/blob/master/API.md
+> 3.接口详情文档，请查阅：https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API.md
 
 ==================
 
