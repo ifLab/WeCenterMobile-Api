@@ -69,7 +69,7 @@
 
 > 图释：
 
-![image](https://raw.githubusercontent.com/ifLab/FMobile-Design/master/api/at_comment.png)
+![image](https://raw.githubusercontent.com/ifLab/WeCenterMobile-Api/master/docs/img/at_comment.png)
 
 ## 发表文章评论
 
