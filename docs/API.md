@@ -23,35 +23,35 @@ http://w.hihwei.com/
 
 ##用户账号相关接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Account.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Account.md
 
 ##发布相关接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Publish.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Publish.md
 
 ##发现接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Explore.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Explore.md
 
 ##首页接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Home.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Home.md
 
 ##用户中心相关列表接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_UList.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_UList.md
 
 ##话题相关接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Topic.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Topic.md
 
 ##问题和回答相关接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Q%26A.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Q%26A.md
 
 ##文章相关接口
 
-https://github.com/ifLab/FMobile-Design/blob/master/API_Article.md
+https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API_Article.md
 
 
 
