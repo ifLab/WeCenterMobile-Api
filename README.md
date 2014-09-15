@@ -39,7 +39,7 @@ WeCenter(2.5.16) 移动客户端 Api (2014-9-6)
 
 接口详情文档，请查阅：https://github.com/ifLab/WeCenterMobile-Api/blob/master/docs/API.md
 
-PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei") (QQ:776250635)
+PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei")
 
 ==================
 
