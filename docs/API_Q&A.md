@@ -135,6 +135,10 @@
 
 > [In] id 回答编号
 
+> [Out] Int(评论ID)
+
+> [Out] Int(评论人UID)
+
 > [Out] Int(评论人ID)
 
 > [Out] String(评论人姓名)
