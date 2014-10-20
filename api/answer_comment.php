@@ -19,7 +19,7 @@ $get['page'] = ($get['page']>ceil($total_rows['total_rows']/$per_page))?ceil($to
 $offset = ($get['page']-1)*$per_page.','.$per_page;
 
 
-$comment = $db->query("SELECT users.uid,user_name,message as content,time as add_time
+$comment = $db->query("SELECT id,users.uid,user_name,message as content,time as add_time
 					   FROM ".TABLE_PREFIX."answer_comments AS answer_comments LEFT JOIN ".TABLE_PREFIX."users AS users ON users.uid = answer_comments.uid
 					   WHERE answer_comments.answer_id ='".$get['id']."'")->result_array();
 
