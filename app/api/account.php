@@ -37,20 +37,29 @@ class account extends AWS_CONTROLLER
 	public function get_userinfo_action(){
 		if( empty( $_GET['uid'] ) ) H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数不完整')));
 
-		$url = 'http://w.hihwei.com/api/user.php?uid='.$_GET['uid'];
-		$cn=curl_init();
-		curl_setopt($cn,CURLOPT_URL,$url);
-		curl_setopt($cn,CURLOPT_RETURNTRANSFER,1);
-		$content = curl_exec($cn);
-		curl_close($cn);
+		$user_info = $this->model('myapi')->get_user_info( $_GET['uid'] );
 
+		if( empty( $user_info ) )  H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('用户不存在')));
 
-		$content = (array)json_decode( $content );
-		if( $content['errno'] == -1 )  H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('用户不存在')));
+		$user_info_key = array('user_name','avatar_file','fans_count','friend_count','question_count','answer_count','topic_focus_count','agree_count','thanks_count');
 
-		$user_info = (array)$content['rsm'];
+		foreach ($user_info as $k => $v) {
+			if( !in_array($k, $user_info_key) ) unset( $user_info['$k'] );
+		}
+
+		$answer_ids = $this->model('myapi')->get_answer_ids( $_GET['uid'] );
+
+		$user_info['answer_favorite_count'] = 0;
+		foreach( $answer_ids as $v ){
+			$user_info['answer_favorite_count'] += $this->model('myapi')->get_answer_favorite_count( $v['answer_id'] );
+		}
+
+		$user_info['avatar_file'] = @str_replace( 'min', 'max', $user_info['avatar_file'] );
+
 		$user_info['has_focus'] = 0;
 		$user_info['signature'] = $this->model('myapi')->get_signature( $_GET['uid'] );
+
+
 		if( !empty($this->user_id) ){
 			$ret = $this->model('myapi')->has_focus($this->user_id,$_GET['uid']);
 			if( !empty( $ret ) )  $user_info['has_focus'] = 1;
