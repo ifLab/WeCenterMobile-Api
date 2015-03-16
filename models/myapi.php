@@ -25,6 +25,16 @@ class myapi_class extends AWS_MODEL
     {
         return $this->fetch_row( 'users', "uid = '".$uid."'" );
     }
+    
+    public function get_answer_ids($uid)
+    {
+        return $this->fetch_all( 'answer', "uid = '".$uid."'" );
+    }
+
+    public function get_answer_favorite_count( $answer_id )
+    {
+        return $this->count( 'favorite', "answer_id = '".$answer_id."'" );
+    }
 
     public function get_question_info( $id ){
     	return $this->fetch_row( 'question', "question_id = '".$id."'" );
