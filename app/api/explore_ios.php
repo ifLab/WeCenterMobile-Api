@@ -135,7 +135,7 @@ class explore_ios extends AWS_CONTROLLER
 				}
 
 				//提问者信息
-				if( $k == 'user_info' ){
+				if( $k == 'user_info' && !empty($val['user_info']) ){
 					foreach( $val['user_info'] as $user_info_k => $user_info_v ){
 							if( !in_array($user_info_k, $user_info_key) ) unset( $posts_list[$key][$k][$user_info_k] );
 							if(  $user_info_k == 'avatar_file' ){
