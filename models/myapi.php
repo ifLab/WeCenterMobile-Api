@@ -33,6 +33,9 @@ class myapi_class extends AWS_MODEL
 
     public function get_answer_favorite_count( $answer_id )
     {
+    	//3.1.1
+        return $this->count( 'favorite', "type = 'answer' AND item_id = '".$answer_id."'" );
+        //2.5.16
         return $this->count( 'favorite', "answer_id = '".$answer_id."'" );
     }
 
