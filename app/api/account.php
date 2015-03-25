@@ -44,7 +44,7 @@ class account extends AWS_CONTROLLER
 		$user_info_key = array('user_name','avatar_file','fans_count','friend_count','question_count','answer_count','topic_focus_count','agree_count','thanks_count');
 
 		foreach ($user_info as $k => $v) {
-			if( !in_array($k, $user_info_key) ) unset( $user_info['$k'] );
+			if( !in_array($k, $user_info_key) ) unset( $user_info[$k] );
 		}
 
 		$answer_ids = $this->model('myapi')->get_answer_ids( $_GET['uid'] );
