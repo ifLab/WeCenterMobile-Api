@@ -231,3 +231,17 @@
 - uid (用户ID)
 
 - NOTE：不需要传其他参数，如果当前用户已经关注该用户，会取消关注，反之则关注
+
+## 批量获取用户头像信息  （2015.3.28 新增 For iOS）
+
+> URL：api/account/get_avatars/ （DEMO:http://www.example.com/?/api/account/get_avatars/）
+
+> HTTP请求方式
+
+- POST
+
+> 请求参数：
+
+> [In] String(以'_'隔开的uid)
+
+> [Out] Array(一维数组，键名为uid，键值为头像路径)
