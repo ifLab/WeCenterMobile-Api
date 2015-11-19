@@ -21,22 +21,67 @@ class home extends AWS_CONTROLLER
 	{		
 		if (! $this->user_id)
 		{
-			 H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请先登录或注册')));
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('请先登录或注册')));
 		}
 
-		$this->per_page = 20;
-		if( !empty( $_GET['per_page'] ) )  $this->per_page = intval( $_GET['per_page'] );
+		$this->per_page = get_setting('contents_per_page');
+
+		if($_GET['per_page'])
+		{
+			$this->per_page = intval($_GET['per_page']);
+		}
 
 
-		$data = $this->model('myhome')->home_activity($this->user_id, (intval($_GET['page']) * $this->per_page) . ", {$this->per_page}");
-		
+		//$data = $this->model('myhome')->home_activity($this->user_id, (intval($_GET['page']) * $this->per_page) . ", {$this->per_page}");
+		$data = $this->model('actions')->home_activity($this->user_id, (intval($_GET['page']) * $this->per_page) . ", {$this->per_page}");
+	
 
 		if (!is_array($data))
 		{
 			$data = array();
 		}
+		else
+		{
+			$data_key = array( 'history_id', 'associate_action', 'user_info', 'answer_info', 'question_info', 'add_time' );
+			$user_info_key = array( 'uid', 'user_name', 'signature' );
+			$answer_info_key = array( 'answer_id', 'answer_content', 'add_time', 'against_count', 'agree_count' );
+			$question_info_key = array( 'question_id', 'question_content', 'add_time', 'update_time', 'answer_count', 'agree_count' );
 
-		//$new_data = array_reverse( $data, true );
+			foreach ($data as $key => $val)
+			{
+				foreach ($val as $k => $v)
+				{
+					if(!in_array($k, $data_key)) unset($data[$key][$k]);
+				}
+
+				if($val['user_info']) 
+				{
+					foreach ($val['user_info'] as $k => $v)
+					{
+						if(!in_array($k, $user_info_key)) unset($data[$key]['user_info'][$k]);
+					}
+
+					$data[$key]['user_info']['avatar_file'] = get_avatar_url($data[$key]['user_info']['uid'],'mid');
+				}
+
+				if($val['answer_info']) 
+				{
+					foreach ($val['answer_info'] as $k => $v)
+					{
+						if(!in_array($k, $answer_info_key)) unset($data[$key]['answer_info'][$k]);
+					}
+				}
+
+				if($val['question_info']) 
+				{
+					foreach ($val['question_info'] as $k => $v)
+					{
+						if(!in_array($k, $question_info_key)) unset($data[$key]['question_info'][$k]);
+					}
+				}
+			}
+		}
+
 		
 		H::ajax_json_output(AWS_APP::RSM(array(
 					'total_rows' => count( $data ),

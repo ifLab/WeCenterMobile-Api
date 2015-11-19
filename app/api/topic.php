@@ -15,9 +15,17 @@ class topic extends AWS_CONTROLLER
 			$rule_action['actions'][] = 'square';
 			$rule_action['actions'][] = 'topic';
 			$rule_action['actions'][] = 'topic_best_answer';
+			$rule_action['actions'][] = 'get_hot_topics';
 		}
 		
 		return $rule_action;
+	}
+
+	public function get_hot_topics_action()
+	{		
+		$ret = $this->model('topic')->get_hot_topics();
+		
+		H::ajax_json_output(AWS_APP::RSM($ret, 1, null));
 	}
 
 	public function square_action()
