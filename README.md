@@ -7,7 +7,7 @@ WeCenter(3.1.1) 移动客户端 Api (2015-3-25)
 
 > 1.Api文件共三个目录，为：
 
-- api/
+- api/apu
 
 - app/api/
 
