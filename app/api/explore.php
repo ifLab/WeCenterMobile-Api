@@ -31,6 +31,17 @@ class explore extends AWS_CONTROLLER
 		
 		return $rule_action;
 	}
+
+	public function setup()
+	{
+		//HTTP::no_cache_header();
+
+		if(! $this->model('myapi')->verify_signature(get_class(),$_GET['mobile_sign']))
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('验签失败')));
+		}
+	}
+
 	
 	//GET: category(选),per_page(选，默认:10),sort_type([new,hot]选,默认:最新),page(默认1),day(默认30),is_recommend
 	public function index_action()

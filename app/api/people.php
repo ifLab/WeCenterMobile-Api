@@ -39,7 +39,13 @@ class people extends AWS_CONTROLLER
 		$this->per_page = get_setting('contents_per_page');
 
 		HTTP::no_cache_header();
+
+		if(! $this->model('myapi')->verify_signature(get_class(),$_GET['mobile_sign']))
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('验签失败')));
+		}
 	}
+
 
 
 	//个人主页 获取用户信息

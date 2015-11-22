@@ -21,6 +21,18 @@ class topic extends AWS_CONTROLLER
 		return $rule_action;
 	}
 
+
+	public function setup()
+	{
+		//HTTP::no_cache_header();
+
+		if(! $this->model('myapi')->verify_signature(get_class(),$_GET['mobile_sign']))
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('验签失败')));
+		}
+	}
+
+
 	public function get_hot_topics_action()
 	{		
 		$ret = $this->model('topic')->get_hot_topics();

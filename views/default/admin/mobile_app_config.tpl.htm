@@ -1,0 +1,55 @@
+<?php TPL::output('admin/global/header.tpl.htm'); ?>
+<?php TPL::output('admin/global/nav_menu.tpl.htm'); ?>
+
+<div class="aw-content-wrap">
+	<form action="admin/mobile_app_config/" id="settings_form" method="post" onsubmit="return false">
+	<div class="mod">
+		<div class="mod-head">
+			<h3>
+				<ul class="nav nav-tabs">
+					<li><a href="javascript:void(0);"><?php _e('移动应用'); ?></a></li>
+               	 </ul>
+			</h3>
+		</div>
+
+		<div class="tab-content mod-content">
+			<table class="table table-striped">
+
+				  <tr>
+                    <td>
+                        <div class="form-group">
+                            <span class="col-sm-4 col-xs-3 control-label"><?php _e('App Secret'); ?>:</span>
+                            <div class="col-sm-5 col-xs-8">
+                                <textarea class="form-control textarea" name="mobile_app_secret" rows="5" ><?php echo get_setting('mobile_app_secret'); ?></textarea>
+
+                                <div class="help-block"><?php _e('每行填写一个AppSecret,如:12884789df747d7affbcd6a7cadd9359'); ?></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+
+                <tr>
+					<td>
+						<div class="form-group">
+							<span class="col-sm-4 col-xs-3 control-label"><?php _e('上次修改时间'); ?>:</span>
+							<div class="col-sm-5 col-xs-8">
+								<?php echo date_friendly(get_setting('mobile_app_secret_update_time')); ?>
+							</div>
+						</div>
+					</td>
+				</tr>
+                
+				<tfoot>
+				<tr>
+					<td>
+						<input type="button" value="<?php _e('保存信息'); ?>" class="btn btn-primary center-block" onclick="AWS.ajax_post($('#settings_form')); setTimeout('window.location.reload()',2000);" />
+					</td>
+				</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	</form>
+</div>
+<?php TPL::output('admin/global/footer.tpl.htm'); ?>

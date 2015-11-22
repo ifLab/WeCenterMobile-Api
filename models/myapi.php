@@ -52,4 +52,69 @@ class myapi_class extends AWS_MODEL
 
         return $user_info;
     }
+
+
+
+    public function verify_signature($class_name,$mobile_sign=null)
+    {
+        if (! $mobile_app_secret = AWS_APP::cache()->get('mobile_app_secret')) //缓存
+        {
+            if(! $mobile_app_secret = $this->fetch_one('system_setting','value',"varname = 'mobile_app_secret'"))
+            {
+                return true;  //从未设置  无需验证
+            }
+            
+            AWS_APP::cache()->set('mobile_app_secret', $mobile_app_secret, 600);
+        }
+
+        if(! $mobile_app_secret = unserialize($mobile_app_secret) )
+        {
+            return true;  //留白  无需验证 
+        }
+
+        if(! $mobile_sign)
+        {
+            return false;
+        }
+
+        $mobile_app_secret_arr = explode("\n", $mobile_app_secret);
+
+        foreach ($mobile_app_secret_arr as $key => $val) 
+        { 
+            if(md5($class_name.$val) == $mobile_sign)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function save_mobile_app_secret($mobile_app_secret)
+    {
+        if($this->fetch_row('system_setting', "varname = 'mobile_app_secret'"))  //修改
+        {
+            $this->update('system_setting', array(
+                                'value' => serialize($mobile_app_secret)
+                            ), "`varname` = 'mobile_app_secret'");
+
+            $this->update('system_setting', array(
+                                'value' => serialize(time())
+                            ), "`varname` = 'mobile_app_secret_update_time'");
+        }
+        else  //新增
+        {
+            $this->insert('system_setting', array(
+                            'value' => serialize($mobile_app_secret),
+                            'varname' => 'mobile_app_secret'
+                        ));
+
+            $this->insert('system_setting', array(
+                            'value' => serialize(time()),
+                            'varname' => 'mobile_app_secret_update_time'
+                        ));
+        }
+
+        AWS_APP::cache()->delete('mobile_app_secret');
+    }
 }
