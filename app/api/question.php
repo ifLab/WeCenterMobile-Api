@@ -26,6 +26,7 @@ class question extends AWS_CONTROLLER
 
 		
 		$rule_action['actions'] = array(
+			'index'
 		);
 		
 
@@ -35,7 +36,7 @@ class question extends AWS_CONTROLLER
 
 	public function setup()
 	{
-		//HTTP::no_cache_header();
+		HTTP::no_cache_header();
 
 		if(! $this->model('myapi')->verify_signature(get_class(),$_GET['mobile_sign']))
 		{
@@ -514,12 +515,13 @@ class question extends AWS_CONTROLLER
 			}
 		}
 
+
 		//$question_info['answers'] = $answers;
 
         H::ajax_json_output(AWS_APP::RSM(array(
             'question_info' => $question_info,
             'question_topics' => $question_topics,
-            'answers' => $answers
+            'answers' => array_values($answers)
         ), 1, null));    
 	}
 

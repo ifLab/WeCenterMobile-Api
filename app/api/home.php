@@ -53,8 +53,9 @@ class home extends AWS_CONTROLLER
 		}
 		else
 		{
-			$data_key = array( 'history_id', 'associate_action', 'user_info', 'answer_info', 'question_info', 'add_time' );
+			$data_key = array( 'history_id', 'associate_action', 'user_info', 'answer_info', 'question_info', 'article_info', 'add_time' );
 			$user_info_key = array( 'uid', 'user_name', 'signature' );
+			$article_info_key = array( 'id', 'title', 'message', 'comments', 'views', 'add_time' );
 			$answer_info_key = array( 'answer_id', 'answer_content', 'add_time', 'against_count', 'agree_count' );
 			$question_info_key = array( 'question_id', 'question_content', 'add_time', 'update_time', 'answer_count', 'agree_count' );
 
@@ -73,6 +74,14 @@ class home extends AWS_CONTROLLER
 					}
 
 					$data[$key]['user_info']['avatar_file'] = get_avatar_url($data[$key]['user_info']['uid'],'mid');
+				}
+
+				if($val['article_info']) 
+				{
+					foreach ($val['article_info'] as $k => $v)
+					{
+						if(!in_array($k, $article_info_key)) unset($data[$key]['article_info'][$k]);
+					}
 				}
 
 				if($val['answer_info']) 
@@ -95,8 +104,8 @@ class home extends AWS_CONTROLLER
 
 		
 		H::ajax_json_output(AWS_APP::RSM(array(
-					'total_rows' => count( $data ),
-					'rows' => $data
+					'total_rows' => count($data),
+					'rows' => array_values($data)
 			), 1, null));
 	}
 	
