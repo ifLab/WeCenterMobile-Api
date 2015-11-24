@@ -28,9 +28,12 @@ WeCenter(3.1.5) 移动客户端 Api (2015-11-18)
 测试AppSecret: test
 
 account加密后的结果mobile_sign=a1822d98da3ce8a4df9543651a0dc600
+
 如http://zhuangbi.me/api/account/get_userinfo/?uid=1&mobile_sign=a1822d98da3ce8a4df9543651a0dc600
+
 详情请参考[接口签名规则](http://wecenter.api.hihwei.com/doku.php?id=sign:rule:%E6%8E%A5%E5%8F%A3%E7%AD%BE%E5%90%8D%E8%A7%84%E5%88%99 "API文档")
 
+MD5加密为32位小写 [MD5在线加密](http://tool.chinaz.com/Tools/MD5.aspx?q=accounttest&md5type=1 "MD5加密")
 
 PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei")
 
