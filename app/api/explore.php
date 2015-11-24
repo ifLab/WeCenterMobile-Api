@@ -146,6 +146,8 @@ class explore extends AWS_CONTROLLER
 						$posts_list[$key]['answer_users'][$kk]['avatar_file'] = get_avatar_url($posts_list[$key]['answer_users'][$kk]['uid'],'mid');
 					}
 				}
+
+				$posts_list[$key]['answer_users'] = array_values($posts_list[$key]['answer_users']);
 			}	
 		}
 
