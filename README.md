@@ -25,7 +25,7 @@ WeCenter(3.1.5) 移动客户端 Api (2015-11-18)
 
 接口测试站点：http://zhuangbi.me/
 
-测试站点AppSecret: 9963aac1ef92ea5eb2fc5f629220a2fe
+测试AppSecret: test
 
 PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei")
 
