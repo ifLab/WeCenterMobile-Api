@@ -47,7 +47,6 @@ class people extends AWS_CONTROLLER
 	}
 
 
-
 	//个人主页 获取用户信息
 	public function index_action()
 	{
@@ -256,6 +255,12 @@ class people extends AWS_CONTROLLER
 
 	public function follows_action()
 	{
+		//页码从1开始
+		if($_GET['page'] AND $_GET['page']>0) 
+		{
+			$_GET['page'] = intval($_GET['page']) - 1;
+		}
+		
 		switch ($_GET['type'])
 		{
 			case 'follows':
@@ -287,7 +292,7 @@ class people extends AWS_CONTROLLER
 
 		
 
-		$user_key = array( 'uid', 'user_name', 'name', 'avatar_file', 'namecard_pic', 'signature', 'reputation', 'agree_count' );
+		$user_key = array( 'uid', 'user_name', 'signature', 'reputation', 'agree_count', 'thanks_count' );
 
 		if( !empty( $users_list ) )
 		{
