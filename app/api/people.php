@@ -142,80 +142,69 @@ class people extends AWS_CONTROLLER
 
 	public function user_actions_action()
 	{
-		if ((isset($_GET['perpage']) AND intval($_GET['perpage']) > 0))
+		if(! $_GET['uid'])
 		{
-			$this->per_page = intval($_GET['perpage']);
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数错误')));
+		}
+
+		$_GET['page'] = $_GET['page'] ? ($_GET['page']-1) : 0;
+
+		if ((isset($_GET['per_page']) AND intval($_GET['per_page']) > 0))
+		{
+			$this->per_page = intval($_GET['per_page']);
 		}
 
 		$data = $this->model('actions')->get_user_actions($_GET['uid'], (intval($_GET['page']) * $this->per_page) . ", {$this->per_page}", $_GET['actions'], $this->user_id);
 
-		TPL::assign('list', $data);
-
-		if (is_mobile())
+		if (!is_array($data))
 		{
-			$template_dir = 'm';
+			$data = array();
 		}
 		else
 		{
-			$template_dir = 'people';
-		}
+			$data_key = array( 'history_id', 'associate_action', 'answer_info', 'question_info', 'article_info', 'add_time' );
+			$article_info_key = array( 'id', 'title', 'message', 'comments', 'views', 'add_time' );
+			$answer_info_key = array( 'answer_id', 'answer_content', 'add_time', 'against_count', 'agree_count' );
+			$question_info_key = array( 'question_id', 'question_content', 'add_time', 'update_time', 'answer_count', 'agree_count' );
 
-		if ($_GET['actions'] == '201')
-		{
-			TPL::output($template_dir . '/ajax/user_actions_questions_201');
-		}
-		else if ($_GET['actions'] == '101')
-		{
-			TPL::output($template_dir . '/ajax/user_actions_questions_101');
-		}
-		else
-		{
-			TPL::output($template_dir . '/ajax/user_actions');
-		}
-	}
-
-
-    public function user_actions_by_where_action()
-    {
-        if ((isset($_GET['perpage']) AND intval($_GET['perpage']) > 0))
-        {
-            $this->per_page = intval($_GET['perpage']);
-        }
-        $associate_type = $_GET['type'];
-
-        if(!in_array($associate_type,array(ACTION_LOG::CATEGORY_ARTICLE,
-                                            ACTION_LOG::CATEGORY_QUESTION,
-                                            ACTION_LOG::CATEGORY_ANSWER,
-                                            ACTION_LOG::CATEGORY_NEWS)))
-        {
-            H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数有误')));
-        }
-
-        $associate_action = $_GET['actions'];
-
-        if( empty( $_GET['page'] ) )  $_GET['page'] = 0;
-				 
-				if($data = $this->model('actions')->get_user_action_by_where($associate_type , $associate_action ,$_GET['uid'] ,(intval($_GET['page']) * $this->per_page) . ", {$this->per_page}"))
+			foreach ($data as $key => $val)
+			{
+				foreach ($val as $k => $v)
 				{
-		    	foreach ($data as $k => $v)
-					{
-						if( !empty( $v['info']['message'] ) AND ( strlen( $v['info']['message'] ) > 80 ) )
-						{
-							 $data[$k]['info']['message'] =  cjk_substr(strip_tags( $v['info']['message'] ),0,80,'utf-8').'...';
-						}
-					}
-				}else
-				{
-					$data = null;
+					if(!in_array($k, $data_key)) unset($data[$key][$k]);
 				}
-					
-        H::ajax_json_output(AWS_APP::RSM(array(
-					'total_rows' => count( $data ),
-					'rows' => $data
-			), 1, null));
 
-    }
+				if($val['article_info']) 
+				{
+					foreach ($val['article_info'] as $k => $v)
+					{
+						if(!in_array($k, $article_info_key)) unset($data[$key]['article_info'][$k]);
+					}
+				}
 
+				if($val['answer_info']) 
+				{
+					foreach ($val['answer_info'] as $k => $v)
+					{
+						if(!in_array($k, $answer_info_key)) unset($data[$key]['answer_info'][$k]);
+					}
+				}
+
+				if($val['question_info']) 
+				{
+					foreach ($val['question_info'] as $k => $v)
+					{
+						if(!in_array($k, $question_info_key)) unset($data[$key]['question_info'][$k]);
+					}
+				}
+			}
+		}
+
+		H::ajax_json_output(AWS_APP::RSM(array(
+					'total_rows' => count($data),
+					'rows' => array_values($data)
+			), 1, null));	
+	}
 
     public function user_info_action()
 	{
@@ -255,11 +244,7 @@ class people extends AWS_CONTROLLER
 
 	public function follows_action()
 	{
-		//页码从1开始
-		if($_GET['page'] AND $_GET['page']>0) 
-		{
-			$_GET['page'] = intval($_GET['page']) - 1;
-		}
+		$_GET['page'] = $_GET['page'] ? ($_GET['page']-1) : 0;
 		
 		switch ($_GET['type'])
 		{
@@ -314,6 +299,11 @@ class people extends AWS_CONTROLLER
 
 	public function topics_action()
 	{
+		if(! $_GET['uid'])
+		{
+			 H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数有误')));
+		}
+
 		if ($topic_list = $this->model('topic')->get_focus_topic_list($_GET['uid'], (intval($_GET['page']) * $this->per_page) . ", {$this->per_page}") AND $this->user_id)
 		{
 			$topic_ids = array();
@@ -329,7 +319,12 @@ class people extends AWS_CONTROLLER
 
 				foreach ($topic_list as $key => $val)
 				{
-					$topic_list[$key]['has_focus'] = $topic_focus[$val['topic_id']];
+					$topic_list[$key]['has_focus'] = $topic_focus[$val['topic_id']] ? 1 : 0;
+				
+					if($val['topic_pic'])
+					{
+						$topic_list[$key]['topic_pic'] = get_setting('upload_url').'/topic/'.$val['topic_pic'];
+					}
 				}
 			}
 		}
@@ -339,6 +334,8 @@ class people extends AWS_CONTROLLER
 				'rows' => $topic_list
 		), 1, null));
 	}
+
+
 
 
     public function favorite_action()
@@ -362,8 +359,131 @@ class people extends AWS_CONTROLLER
             'total_rows' => count( $action_list ),
             'rows' => $action_list
         ), 1, null));
-
-
-
     }
+
+
+    public function profile_setting_action()
+	{
+		if (!$this->user_info['user_name'] OR $this->user_info['user_name'] == $this->user_info['email'] AND $_POST['user_name'])
+		{
+			$update_data['user_name'] = htmlspecialchars(trim($_POST['user_name']));
+
+			if ($check_result = $this->model('account')->check_username_char($_POST['user_name']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', $check_result));
+			}
+		}
+
+		if ($_POST['url_token'] AND $_POST['url_token'] != $this->user_info['url_token'])
+		{
+			if ($this->user_info['url_token_update'] AND $this->user_info['url_token_update'] > (time() - 3600 * 24 * 30))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('你距离上次修改个性网址未满 30 天')));
+			}
+
+			if (!preg_match("/^(?!__)[a-zA-Z0-9_]+$/i", $_POST['url_token']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('个性网址只允许输入英文或数字')));
+			}
+
+			if ($this->model('account')->check_url_token($_POST['url_token'], $this->user_id))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('个性网址已经被占用请更换一个')));
+			}
+
+			if (preg_match("/^[\d]+$/i", $_POST['url_token']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('个性网址不允许为纯数字')));
+			}
+
+			$this->model('account')->update_url_token($_POST['url_token'], $this->user_id);
+		}
+
+		if ($update_data['user_name'] and $this->model('account')->check_username($update_data['user_name']) and $this->user_info['user_name'] != $update_data['user_name'])
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('已经存在相同的姓名, 请重新填写')));
+		}
+
+		if (! H::valid_email($this->user_info['email']))
+		{
+			if (! H::valid_email($_POST['email']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('请输入正确的 E-Mail 地址')));
+			}
+
+			if ($this->model('account')->check_email($_POST['email']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('邮箱已经存在, 请使用新的邮箱')));
+			}
+
+			$update_data['email'] = $_POST['email'];
+
+			$this->model('active')->new_valid_email($this->user_id, $_POST['email']);
+		}
+
+		if ($_POST['common_email'])
+		{
+			if (! H::valid_email($_POST['common_email']))
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('请输入正确的常用邮箱地址')));
+			}
+
+			$update_data['common_email'] = $_POST['common_email'];
+		}
+
+		$update_data['sex'] = intval($_POST['sex']);
+
+		$update_data['province'] = htmlspecialchars($_POST['province']);
+
+		$update_data['city'] = htmlspecialchars($_POST['city']);
+
+		if ($_POST['birthday_y'])
+		{
+			$update_data['birthday'] = intval(strtotime(intval($_POST['birthday_y']) . '-' . intval($_POST['birthday_m']) . '-' . intval($_POST['birthday_d'])));
+		}
+
+		if (!$this->user_info['verified'])
+		{
+			$update_attrib_data['signature'] = htmlspecialchars($_POST['signature']);
+		}
+
+		$update_data['job_id'] = intval($_POST['job_id']);
+
+		if ($_POST['signature'] AND !$this->model('integral')->fetch_log($this->user_id, 'UPDATE_SIGNATURE'))
+		{
+			$this->model('integral')->process($this->user_id, 'UPDATE_SIGNATURE', round((get_setting('integral_system_config_profile') * 0.1)), AWS_APP::lang()->_t('完善一句话介绍'));
+		}
+
+		$update_attrib_data['qq'] = htmlspecialchars($_POST['qq']);
+		$update_attrib_data['homepage'] = htmlspecialchars($_POST['homepage']);
+		$update_data['mobile'] = htmlspecialchars($_POST['mobile']);
+
+		if (($update_attrib_data['qq'] OR $update_attrib_data['homepage'] OR $update_data['mobile']) AND !$this->model('integral')->fetch_log($this->user_id, 'UPDATE_CONTACT'))
+		{
+			$this->model('integral')->process($this->user_id, 'UPDATE_CONTACT', round((get_setting('integral_system_config_profile') * 0.1)), AWS_APP::lang()->_t('完善联系资料'));
+		}
+
+		if (get_setting('auto_create_social_topics') == 'Y')
+		{
+			if ($_POST['city'])
+			{
+				$this->model('topic')->save_topic($_POST['city']);
+			}
+
+			if ($_POST['province'])
+			{
+				$this->model('topic')->save_topic($_POST['province']);
+			}
+		}
+
+		// 更新主表
+		$this->model('account')->update_users_fields($update_data, $this->user_id);
+
+		// 更新从表
+		$this->model('account')->update_users_attrib_fields($update_attrib_data, $this->user_id);
+
+		//$this->model('account')->set_default_timezone($_POST['default_timezone'], $this->user_id);
+
+		H::ajax_json_output(AWS_APP::RSM(AWS_APP::lang()->_t('个人资料保存成功'), 1, null));
+	}
 }

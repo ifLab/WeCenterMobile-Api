@@ -175,7 +175,7 @@ class topic extends AWS_CONTROLLER
 		{
 			if ($this->model('topic')->get_topic_by_id($topic_info['merged_id']))
 			{
-				$topic_info = $this->model('topic')->get_topic_by_id($_GET['merged_id']);
+				$topic_info = $this->model('topic')->get_topic_by_id($topic_info['merged_id']);
 				$topic_info['merged_tip'] = "您查看的话题已被合并到当前话题";
 			}
 			else
@@ -187,144 +187,120 @@ class topic extends AWS_CONTROLLER
 		//此话题的最佳回答者
 		//TPL::assign('best_answer_users', $this->model('topic')->get_best_answer_users_by_topic_id($topic_info['topic_id'], 5));
 		
-		if ($this->user_id)
+		$topic_info['has_focus'] = 0;
+
+		if ($this->user_id AND $this->model('topic')->has_focus_topic($this->user_id, $topic_info['topic_id']))
 		{
-			$topic_info['has_focus'] = $this->model('topic')->has_focus_topic($this->user_id, $topic_info['topic_id']);
+			$topic_info['has_focus'] = 1;
+		}
+
+		if($topic_info['topic_pic'])
+		{
+			$topic_info['topic_pic'] = get_setting('upload_url').'/topic/'.$topic_info['topic_pic'];
 		}
 		
 		$topic_info['topic_description'] = nl2br(FORMAT::parse_markdown($topic_info['topic_description']));
 
-		H::ajax_json_output(AWS_APP::RSM(array(
-			'topic_info' => $topic_info
-		), 1, null));
+		H::ajax_json_output(AWS_APP::RSM($topic_info, 1, null));
+	}
+
+	//获取多个话题信息
+	public function topics_action()
+	{	
+		if(!is_array($_POST['topics'])) 
+		{
+			$_POST['topics'] = explode(',',$_POST['topics']); //英文逗号隔开
+		}
+
+		if(!$_POST['topics'])
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数错误')));
+		}
+			
+		if (!$topic_info = $this->model('topic')->get_topics_by_ids($_POST['topics']))
+		{
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('话题不存在')));
+		}
+
+		foreach ($topic_info as $key => $val)
+		{
+			if($val['topic_pic'])
+			{
+				$topic_info[$key]['topic_pic'] = get_setting('upload_url').'/topic/'.$val['topic_pic'];
+			}
+
+			$topic_info[$key]['has_focus'] = 0;
+
+			if ($this->user_id AND $this->model('topic')->has_focus_topic($this->user_id, $val['topic_id']))
+			{
+				$topic_info[$key]['has_focus'] = 1;
+			}
+
+			$topic_info[$key]['topic_description'] = nl2br(FORMAT::parse_markdown($val['topic_description']));
+		}
+	
+		H::ajax_json_output(AWS_APP::RSM($topic_info, 1, null));
 	}
 
 
-	public function topic_best_answer_action()
+	public function topic_best_answer_list_action()
 	{
-		if (is_numeric($_GET['id']))
+		if(! $_GET['topic_id'])
 		{
-			if (!$topic_info = $this->model('topic')->get_topic_by_id($_GET['id']))
-			{
-				$topic_info = $this->model('topic')->get_topic_by_title($_GET['id']);
-			}
-		}
-		else if (!$topic_info = $this->model('topic')->get_topic_by_title($_GET['id']))
-		{
-			$topic_info = $this->model('topic')->get_topic_by_url_token($_GET['id']);
+			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数错误')));
 		}
 		
-		if (!$topic_info)
-		{
-			H::redirect_msg(AWS_APP::lang()->_t('话题不存在'), '/');
-		}
+		$_GET['page'] = $_GET['page'] ? ($_GET['page']-1) : 0;
 		
-		if ($topic_info['merged_id'] AND $topic_info['merged_id'] != $topic_info['topic_id'])
-		{
-			if ($this->model('topic')->get_topic_by_id($topic_info['merged_id']))
-			{
-				$topic_info = $this->model('topic')->get_topic_by_id($_GET['merged_id']);
-				$topic_info['merged_tip'] = "您查看的话题已被合并到当前话题";
-			}
-			else
-			{
-				$this->model('topic')->remove_merge_topic($topic_info['topic_id'], $topic_info['merged_id']);
-			}
-		}
-
-		$contents_topic_id = $topic_info['topic_id'];
-		$contents_topic_title = $topic_info['topic_title'];
-		
-		if ($merged_topics = $this->model('topic')->get_merged_topic_ids($topic_info['topic_id']))
-		{
-			foreach ($merged_topics AS $key => $val)
-			{
-				$merged_topic_ids[] = $val['source_id'];
-			}
+		$action_list = $this->model('topic')->get_topic_best_answer_action_list(intval($_GET['topic_id']), $this->user_id, intval($_GET['page']) * get_setting('contents_per_page') . ', ' . get_setting('contents_per_page'));
 			
-			$contents_topic_id .= ',' . implode(',', $merged_topic_ids);
-			
-			if ($merged_topics_info = $this->model('topic')->get_topics_by_ids($merged_topic_ids))
-			{
-				$contents_topic_title = array(
-					$contents_topic_title
-				);
-				
-				foreach($merged_topics_info AS $key => $val)
-				{
-					$contents_topic_title[] = $val['topic_title'];
-				}
-			}
-			
-			if ($contents_topic_title)
-			{
-				$contents_topic_title .= ',' . implode(',', $contents_topic_title);
-			}
-		}
-		
-		$best_answer = $this->model('topic')->get_topic_best_answer_action_list($contents_topic_id, $this->user_id, get_setting('contents_per_page'));
-
 		$question_info_key = array('question_id','question_content');
-		$answer_info_key = array('answer_id','answer_content','agree_count', 'uid');
-		$best_answer_key = array('question_info','answer_info');
+		$answer_info_key = array('answer_id','answer_content','add_time','against_count','agree_count','comment_count','thanks_count','agree_status');
 
-		if( empty( $best_answer ) ){
-			 H::ajax_json_output(AWS_APP::RSM(array(
-				'total_rows' => 0,
-				), 1, null));
-			 exit;
-		}
+		if($action_list)
+		{
+			foreach ($action_list as $key => $val)
+			{
+				foreach ($val as $kk => $vv)
+				{
+					if(! in_array($kk, array('question_info','user_info','answer_info'))) unset($action_list[$key][$kk]);
 
-		$new_best_answer = array();
-		if( !empty( $best_answer ) ){
-			foreach ($best_answer as $k => $v) {
-				foreach ($v as $k_k => $v_v) {
-					if(  !in_array($k_k, $best_answer_key) ) unset( $best_answer[$k][$k_k] );
-					if( $k_k = "question_info" ){
-						 //$topics_list[$k][$k_k] = str_replace( '_32_32', '_100_100', $topics_list[$k][$k_k]);
-						 foreach ($best_answer[$k][$k_k] as $k_k_k => $v_v_v) {
-						 	if(!in_array($k_k_k, $question_info_key)) unset( $best_answer[$k][$k_k][$k_k_k] );
-						 }
+					if($kk == 'question_info')
+					{
+						foreach ($vv as $k => $v) 
+						{
+							if(!in_array($k, $question_info_key)) unset($action_list[$key][$kk][$k]);
+						}
 					}
-					if( $k_k = "answer_info" ){
-						 //$topics_list[$k][$k_k] = str_replace( '_32_32', '_100_100', $topics_list[$k][$k_k]);
-						 foreach ($best_answer[$k][$k_k] as $k_k_k => $v_v_v) {
-						 	if(!in_array($k_k_k, $answer_info_key)) unset( $best_answer[$k][$k_k][$k_k_k] );
-						 }
-					}	
-				}
 
-				//取回答者信息(头像)
-				if( !empty($best_answer[$k]['answer_info']['uid']) ){
-					$user_info = $this->model('myapi')->get_user_info( $best_answer[$k]['answer_info']['uid'] );
-					$best_answer[$k]['answer_info']['avatar_file'] = $user_info['avatar_file'];
-					$best_answer[$k]['answer_info']['avatar_file'] = str_replace('min', 'max', $best_answer[$k]['answer_info']['avatar_file']);
-				}
+					if($kk == 'user_info')
+					{
+						$action_list[$key][$kk] = $this->model('myapi')->get_clean_user_info($vv);
+					}
 
-				$answer_attachs = $this->model('publish')->get_attach('answer', $best_answer[$k]['answer_info']['answer_id'], 'max');
+					if($kk == 'answer_info')
+					{
+						foreach ($vv as $k => $v) 
+						{
+							if(!in_array($k, $answer_info_key)) unset($action_list[$key][$kk][$k]);
+						}
 
-				//附件
-				//print_r( $answer_attachs );
+						$vv['answer_content'] = $this->model('question')->parse_at_user(FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($vv['answer_content']))));
+						$action_list[$key][$kk]['answer_content']  = cjk_substr(trim(strip_tags($vv['answer_content'])),0,100);
 
-				if( !empty( $answer_attachs ) ){
-					preg_match_all('/\[attach\]([0-9]+)\[\/attach]/', $best_answer[$k]['answer_info']['answer_content'], $matches);
-					foreach( $matches[0] as $m_k => $m_v ){
-						 //print_r( $matches );
-						 $my_num = substr($m_v, 8, -9);
-						 $my_replace = "<img src='".$answer_attachs[$my_num]['attachment']."'/>";
-						 $best_answer[$k]['answer_info']['answer_content'] = str_replace( $m_v, $my_replace, $best_answer[$k]['answer_info']['answer_content'] );
 					}
 				}
-
-				//把\n替换成<br/>
-				$best_answer[$k]['answer_info']['answer_content'] = str_replace("\n", "<br>",  $best_answer[$k]['answer_info']['answer_content'] );
-				$new_best_answer[] = $best_answer[$k];
 			}
+		}
+		else
+		{
+			 $action_list = null;
 		}
 
 		H::ajax_json_output(AWS_APP::RSM(array(
-				'total_rows' => count( $best_answer ),
-				'rows' => $new_best_answer
-			), 1, null));
+					'total_rows' => count($action_list),
+					'rows' => $action_list
+				), 1, null));
 	}
+
 }

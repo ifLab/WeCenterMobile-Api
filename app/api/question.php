@@ -122,8 +122,7 @@ class question extends AWS_CONTROLLER
 			$user_info = $this->model('account')->get_user_info_by_uid( $answer_info['uid'], true );
 		}	
 
-		$answer['answer_content'] = $this->model('question')->parse_at_user(FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($answer['answer_content']))));
-
+		$answer_info['answer_content'] = $this->model('question')->parse_at_user(FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($answer_info['answer_content']))));
 
 		$answer_info['user_vote_status'] = 0;
 		$answer_info['user_thanks_status'] = 0;
@@ -160,6 +159,9 @@ class question extends AWS_CONTROLLER
 		{
 			$answer_info['question_content'] = $question_info['question_content'];
 		}
+
+
+
 
 		H::ajax_json_output(AWS_APP::RSM(array(
 			'answer' => $answer_info
@@ -384,16 +386,31 @@ class question extends AWS_CONTROLLER
 
 				$answer_users_rated_thanks = $this->model('answer')->users_rated('thanks', $answer_ids, $this->user_id);
 				$answer_users_rated_uninterested = $this->model('answer')->users_rated('uninterested', $answer_ids, $this->user_id);
+
+
+				//$answer_attachs = $this->model('publish')->get_attachs('answer', $has_attach_answer_ids, 'min');
             }
 
 			foreach ($answer_list as $answer)
 			{
+				if ($answer['has_attach'])
+				{
+					$answer['attachs'] = $answer_attachs[$answer['answer_id']];
+
+					//$answer['insert_attach_ids'] = FORMAT::parse_attachs($answer['answer_content'], true);
+				}
 
 				$answer['user_rated_thanks'] = $answer_users_rated_thanks[$answer['answer_id']];
 				$answer['user_rated_uninterested'] = $answer_users_rated_uninterested[$answer['answer_id']];
 
-				$answer['answer_content'] = cjk_substr( strip_ubb($answer['answer_content']),0,100);
+				//$answer['answer_content'] = cjk_substr( strip_ubb($answer['answer_content']),0,100);
 
+				
+				$answer['answer_content'] = $this->model('question')->parse_at_user(FORMAT::parse_attachs(nl2br(FORMAT::parse_bbcode($answer['answer_content']))));
+				
+				$answer['answer_content'] = cjk_substr(trim(strip_tags($answer['answer_content'])),0,100);
+
+		
 				//$answer['agree_users'] = $answer_agree_users[$answer['answer_id']];
 				$answer['agree_status'] = $answer_vote_status[$answer['answer_id']];
 
@@ -498,8 +515,6 @@ class question extends AWS_CONTROLLER
 
 					$answers[$key]['user_info']['avatar_file'] = get_avatar_url($answers[$key]['user_info']['uid'],'mid');
 				}
-
-				$answers[$key]['answer_content'] = strip_tags( $value['answer_content'] );
 			}
 		}
 

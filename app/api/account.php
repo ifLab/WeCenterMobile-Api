@@ -254,7 +254,7 @@ class account extends AWS_CONTROLLER
 	}
 
 
-	/* For iOS 2015.3.27. */
+	/* For iOS 2015.3.27. */  /* 2015.11.29 废弃 */
 	public function get_avatars_action()
 	{
 		if( empty($_POST['uids']) )
@@ -283,7 +283,7 @@ class account extends AWS_CONTROLLER
 
 	public function get_userinfo_action()
 	{
-		if(empty($_GET['uid']))
+		if(!isset($_GET['uid']))
 		{
 			H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数不完整')));
 		} 
@@ -320,7 +320,7 @@ class account extends AWS_CONTROLLER
 
         $user_info['has_focus'] = 0;
        
-        if($this->user_id AND $this->model('follow')->users_follow_check($this->user_id,$user_info['uid']))
+        if($this->user_id AND $this->model('follow')->user_follow_check($this->user_id,$user_info['uid']))
         {
             $user_info['has_focus'] = 1;
         }
