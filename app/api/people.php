@@ -292,13 +292,15 @@ class people extends AWS_CONTROLLER
 		}
 
 	   	H::ajax_json_output(AWS_APP::RSM(array(
-				'total_rows' => count( $users_list ),
+				'total_rows' => count( $ret ),
 				'rows' => $ret
 		), 1, null));
 	}
 
 	public function topics_action()
 	{
+		$_GET['page'] = $_GET['page'] ? ($_GET['page']-1) : 0;
+		
 		if(! $_GET['uid'])
 		{
 			 H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('参数有误')));
