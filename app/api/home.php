@@ -53,11 +53,12 @@ class home extends AWS_CONTROLLER
 		}
 		else
 		{
-			$data_key = array( 'history_id', 'associate_action', 'user_info', 'answer_info', 'question_info', 'article_info', 'add_time' );
+			$data_key = array( 'history_id', 'associate_action', 'user_info', 'answer_info', 'question_info', 'article_info', 'comment_info', 'add_time' );
 			$user_info_key = array( 'uid', 'user_name', 'signature' );
 			$article_info_key = array( 'id', 'title', 'message', 'comments', 'views', 'add_time' );
 			$answer_info_key = array( 'answer_id', 'answer_content', 'add_time', 'against_count', 'agree_count' );
 			$question_info_key = array( 'question_id', 'question_content', 'add_time', 'update_time', 'answer_count', 'agree_count' );
+
 
 			foreach ($data as $key => $val)
 			{
