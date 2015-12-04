@@ -299,7 +299,7 @@ class topic extends AWS_CONTROLLER
 
 		H::ajax_json_output(AWS_APP::RSM(array(
 					'total_rows' => count($action_list),
-					'rows' => $action_list
+					'rows' => array_values($action_list)
 				), 1, null));
 	}
 
