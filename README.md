@@ -27,7 +27,7 @@ WeCenter(3.1.5) 移动客户端 Api (2015-11-18)
 
 测试AppSecret: 12884789df747d7affbcd6a7cadd9359
 
-如http://zhuangbi.me/api/account/get_userinfo/?uid=1&mobile_sign=a1822d98da3ce8a4df9543651a0dc600
+如http://zhuangbi.me/api/account/get_userinfo/?uid=1&mobile_sign=efeaf5de519976c71ec1204e331a1fd5
 
 详情请参考[接口签名规则](http://wecenter.api.hihwei.com/doku.php?id=sign:rule:%E6%8E%A5%E5%8F%A3%E7%AD%BE%E5%90%8D%E8%A7%84%E5%88%99 "API文档")
 
