@@ -25,9 +25,7 @@ WeCenter(3.1.5) 移动客户端 Api (2015-11-18)
 
 接口测试站点：http://zhuangbi.me/
 
-测试AppSecret: test
-
-account加密后的结果mobile_sign=a1822d98da3ce8a4df9543651a0dc600
+测试AppSecret: 12884789df747d7affbcd6a7cadd9359
 
 如http://zhuangbi.me/api/account/get_userinfo/?uid=1&mobile_sign=a1822d98da3ce8a4df9543651a0dc600
 
