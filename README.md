@@ -1,7 +1,7 @@
 WeCenterMobile-Api
 ==================
 
-WeCenter(3.1.5) 移动客户端 Api (2015-11-18)
+WeCenter(3.1.7) 移动客户端 Api (2016-01-12)
 
 ####Api安装说明
 
@@ -31,6 +31,6 @@ PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei
 
 ==================
 
-Copyright 2014 [emtx.com](http://emtx.com/)&[iflab.org](http://iflab.org/)
+Copyright 2015 [emtx.com](http://emtx.com/)&[iflab.org](http://iflab.org/)
 
 Released under the MIT license
