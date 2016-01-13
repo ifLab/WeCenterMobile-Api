@@ -10,13 +10,13 @@ class topic extends AWS_CONTROLLER
 	{
 		$rule_action['rule_type'] = "white";	// 黑名单,黑名单中的检查  'white'白名单,白名单以外的检查
 		
-		if ($this->user_info['permission']['visit_topic'] AND $this->user_info['permission']['visit_site'])
-		{
-			$rule_action['actions'][] = 'square';
-			$rule_action['actions'][] = 'topic';
-			$rule_action['actions'][] = 'topic_best_answer';
-			$rule_action['actions'][] = 'get_hot_topics';
-		}
+		
+		$rule_action['actions'][] = 'square';
+		$rule_action['actions'][] = 'topic';
+		$rule_action['actions'][] = 'topic_best_answer';
+		$rule_action['actions'][] = 'get_hot_topics';
+		$rule_action['actions'][] = 'hot_topics';
+	
 		
 		return $rule_action;
 	}
@@ -40,117 +40,59 @@ class topic extends AWS_CONTROLLER
 		H::ajax_json_output(AWS_APP::RSM($ret, 1, null));
 	}
 
-	public function square_action()
+
+	public function hot_topics_action()
 	{
-		if (!$_GET['id'] AND !$this->user_id)
+		switch ($_GET['day'])
 		{
-			$_GET['id'] = 'hot';
-		}
+			case 'month':
+				$order = 'discuss_count_last_month DESC';
+			break;
 
-		if( !$_GET['per_page'] ) $_GET['per_page'] = 10;
-		
-		switch ($_GET['id'])
-		{			
+			case 'week':
+				$order = 'discuss_count_last_week DESC';
+			break;
+
 			default:
-			case 'focus':
-				if ($topics_list = $this->model('topic')->get_focus_topic_list($this->user_id, calc_page_limit($_GET['page'], $_GET['per_page'])))
-				{
-					$topics_list_total_rows = $this->user_info['topic_focus_count'];
-					
-					foreach ($topics_list AS $key => $val)
-					{
-						$topics_list[$key]['action_list'] = $this->model('posts')->get_posts_list('question', 1, 3, 'new', explode(',', $val['topic_id']));
-					}
-				}
-				
-				$topic_key = array( 'topic_id', 'topic_title', 'topic_description', 'topic_pic' );
-				if( !empty( $topics_list ) ){
-					foreach ($topics_list as $k => $v) {
-						foreach ($v as $k_k => $v_v) {
-							if(  !in_array($k_k, $topic_key) ) unset( $topics_list[$k][$k_k] );
-							if( $k_k = "topic_pic" ) $topics_list[$k][$k_k] = str_replace( '_32_32', '_100_100', $topics_list[$k][$k_k]);
-						}
-					}
-				}
-
-				H::ajax_json_output(AWS_APP::RSM(array(
-						'total_rows' => $topics_list_total_rows,
-						'rows' => $topics_list
-					), 1, null));
+				$order = 'discuss_count DESC';
 			break;
-			
-			case 'hot':
-				if (!$topics_list = AWS_APP::cache()->get('square_hot_topic_list_' . intval($_GET['page'])))
-				{
-					if ($topics_list = $this->model('topic')->get_topic_list(null, 'discuss_count DESC',$_GET['per_page'], $_GET['page']))
-					{
-						$topics_list_total_rows = $this->model('topic')->found_rows();
-						
-						AWS_APP::cache()->set('square_hot_topic_list_total_rows', $topics_list_total_rows, get_setting('cache_level_low'));
-						
-						foreach ($topics_list AS $key => $val)
-						{
-							$topics_list[$key]['action_list'] = $this->model('posts')->get_posts_list('question', 1, 3, 'new', explode(',', $val['topic_id']));
-						}
-					}
-					
-					AWS_APP::cache()->set('square_hot_topic_list_' . intval($_GET['page']), $topics_list, get_setting('cache_level_low'));
-				}
-				else
-				{
-					$topics_list_total_rows = AWS_APP::cache()->get('square_hot_topic_list_total_rows');
-				}
-				
-				$topic_key = array( 'topic_id', 'topic_title', 'topic_description', 'topic_pic' );
-				if( !empty( $topics_list ) ){
-					foreach ($topics_list as $k => $v) {
-						foreach ($v as $k_k => $v_v) {
-							if(  !in_array($k_k, $topic_key) ) unset( $topics_list[$k][$k_k] );
-							if( $k_k = "topic_pic" ) $topics_list[$k][$k_k] = str_replace( '_32_32', '_100_100', $topics_list[$k][$k_k]);
-						}
-					}
-				}
-
-				H::ajax_json_output(AWS_APP::RSM(array(
-						'total_rows' => $topics_list_total_rows,
-						'rows' => $topics_list
-					), 1, null));
-				break;
-			
-			case 'today':
-				if ($today_topics = rtrim(get_setting('today_topics'), ','))
-				{
-					if (!$today_topic = AWS_APP::cache()->get('square_today_topic_' . md5($today_topics)))
-					{
-						if ($today_topic = $this->model('topic')->get_topic_by_title(array_random(explode(',', $today_topics))))
-						{					
-							$today_topic['best_answer_users'] = $this->model('topic')->get_best_answer_users_by_topic_id($today_topic['topic_id'], 5);
-							
-							$today_topic['questions_list'] = $this->model('posts')->get_posts_list('question', 1, 3, 'new', explode(',', $today_topic['topic_id']));
-							
-							AWS_APP::cache()->set('square_today_topic_' . md5($today_topics), $today_topic, (strtotime('Tomorrow') - time()));
-						}
-					}
-				}
-
-					$topic_key = array( 'topic_id', 'topic_title', 'topic_description', 'topic_pic' );
-					if( !empty( $topics_list ) ){
-						foreach ($topics_list as $k => $v) {
-							foreach ($v as $k_k => $v_v) {
-								if(  !in_array($k_k, $topic_key) ) unset( $topics_list[$k][$k_k] );
-								if( $k_k = "topic_pic" ) $topics_list[$k][$k_k] = str_replace( '_32_32', '_100_100', $topics_list[$k][$k_k]);
-							}
-						}
-					}
-					H::ajax_json_output(AWS_APP::RSM(array(
-						'total_rows' => $topics_list_total_rows,
-						'rows' => $topics_list
-					), 1, null));
-				break;
-			break;
-
 		}
+
+		$cache_key = 'square_hot_topic_list' . md5($order) . '_' . intval($_GET['page']);
+
+		if (!$topics_list = AWS_APP::cache()->get($cache_key))
+		{
+			if ($topics_list = $this->model('topic')->get_topic_list(null, $order, 20, $_GET['page']))
+			{
+				$topics_list_total_rows = $this->model('topic')->found_rows();
+
+				AWS_APP::cache()->set('square_hot_topic_list_total_rows', $topics_list_total_rows, get_setting('cache_level_low'));
+			}
+
+			AWS_APP::cache()->set($cache_key, $topics_list, get_setting('cache_level_low'));
+		}
+		else
+		{
+			$topics_list_total_rows = AWS_APP::cache()->get('square_hot_topic_list_total_rows');
+		}
+
+		if($topics_list)
+		{
+			foreach ($topics_list as $key => $val)
+			{
+				if($val['topic_pic'])
+				{
+					$topics_list[$key]['topic_pic'] = get_setting('upload_url').'/topic/'.$val['topic_pic'];
+				}
+			}
+		}
+
+		H::ajax_json_output(AWS_APP::RSM(array(
+				'total_rows' => count( $topics_list ),
+				'rows' => $topics_list
+		), 1, null));
 	}
+
 
 	public function topic_action()
 	{	
@@ -239,7 +181,7 @@ class topic extends AWS_CONTROLLER
 			$topic_info[$key]['topic_description'] = nl2br(FORMAT::parse_markdown($val['topic_description']));
 		}
 	
-		H::ajax_json_output(AWS_APP::RSM($topic_info, 1, null));
+		H::ajax_json_output(AWS_APP::RSM(array_values($topic_info), 1, null));
 	}
 
 

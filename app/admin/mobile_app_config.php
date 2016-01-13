@@ -35,8 +35,37 @@ class mobile_app_config extends AWS_ADMIN_CONTROLLER
 			H::ajax_json_output(AWS_APP::RSM(null, '-1', AWS_APP::lang()->_t('保存设置成功')));
 		}
 
-		TPL::output('admin/mobile_app_config');
+		TPL::output('admin/app/mobile_app_config');
 	}	
 
-	
+
+	//Crash Log 列表
+	public function app_log_action()
+	{
+		$list = $this->model('myapi')->get_app_log_list('', 'id DESC', $this->per_page, $_GET['page']);
+
+		$total_rows = $this->model('myapi')->found_rows();
+
+		$url_param = array();
+
+		foreach($_GET as $key => $val)
+		{
+			if (!in_array($key, array('app', 'c', 'act', 'page')))
+			{
+				$url_param[] = $key . '-' . $val;
+			}
+		}
+
+		TPL::assign('pagination', AWS_APP::pagination()->initialize(array(
+			'base_url' => get_js_url('/admin/app_log/app_log/') . implode('__', $url_param),
+			'total_rows' => $total_rows,
+			'per_page' => $this->per_page
+		))->create_links());
+
+		TPL::assign('total_rows', $total_rows);
+		TPL::assign('list', $list);
+
+		TPL::output('admin/app/app_log');
+	}	
+
 }

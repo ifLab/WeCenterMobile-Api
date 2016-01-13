@@ -54,7 +54,6 @@ class myapi_class extends AWS_MODEL
     }
 
 
-
     public function verify_signature($class_name,$mobile_sign=null)
     {
         if (! $mobile_app_secret = AWS_APP::cache()->get('mobile_app_secret')) //缓存
@@ -117,4 +116,18 @@ class myapi_class extends AWS_MODEL
 
         AWS_APP::cache()->delete('mobile_app_secret');
     }
+
+    public function save_app_log($content)
+    {
+        return $this->insert('app_log', array(
+                'content' => htmlspecialchars($content),
+                'add_time' => time()
+            ));
+    }
+
+    public function get_app_log_list($where = null, $order = 'id DESC', $limit = 10, $page = null)
+    {
+        return $this->fetch_page('app_log', $where, $order, $page, $limit);
+    }
+
 }
