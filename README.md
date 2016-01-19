@@ -15,7 +15,7 @@ WeCenter(3.1.7) 移动客户端 Api (2016-01-12)
 
 - app/admin/mobile_app_config.php
 
-- views/default/admin/mobile_app_config.tpl.htm
+- views/default/admin/app/mobile_app_config.tpl.htm
 
 - system/config/admin_menu.extension.php
 
@@ -31,6 +31,6 @@ PS:对接口有疑问或修改建议，请联系[@Hwei](http://hihwei.com/ "Hwei
 
 ==================
 
-Copyright 2015 [emtx.com](http://emtx.com/)&[iflab.org](http://iflab.org/)
+Copyright 2016 [emtx.com](http://emtx.com/)&[iflab.org](http://iflab.org/)
 
 Released under the MIT license
