@@ -136,6 +136,12 @@ class explore extends AWS_CONTROLLER
 				$posts_list[$key]['answer_users'] = array_values($posts_list[$key]['answer_users']);
 			}	
 		}
+		else
+		{
+			$posts_list = array();
+		}
+
+
 
 		H::ajax_json_output(AWS_APP::RSM(array( 
 							 	'total_rows'=>count($posts_list),

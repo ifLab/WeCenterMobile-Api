@@ -31,6 +31,9 @@ class publish extends AWS_CONTROLLER
 	//上传附件
 	public function attach_upload_action()
 	{
+		if(isset($_POST['id']) AND !isset($_GET['id'])) $_GET['id'] = $_POST['id'];
+		if(isset($_POST['attach_access_key']) AND !isset($_GET['attach_access_key'])) $_GET['attach_access_key'] = $_POST['attach_access_key'];
+
 		if (get_setting('upload_enable') != 'Y')
         {
             H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('站点不允许上传附件'))); 
