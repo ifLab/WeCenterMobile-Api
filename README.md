@@ -11,11 +11,13 @@ WeCenter(3.1.7) 移动客户端 Api (2016-01-12)
 
 - models/
 
-> 2.AppSecret后台管理共三个文件，为：
+> 2.AppSecret后台管理共四个文件，为：
 
 - app/admin/mobile_app_config.php
 
 - views/default/admin/app/mobile_app_config.tpl.htm
+
+- views/default/admin/app/app_log.tpl.htm
 
 - system/config/admin_menu.extension.php
 
