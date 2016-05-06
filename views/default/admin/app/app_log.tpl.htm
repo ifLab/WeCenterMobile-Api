@@ -1,0 +1,73 @@
+<?php TPL::output('admin/global/header.tpl.htm'); ?>
+<?php TPL::output('admin/global/nav_menu.tpl.htm'); ?>
+
+<div class="aw-content-wrap">
+    <div class="mod">
+        <div class="mod-head">
+            <h3>
+                <ul class="nav nav-tabs">
+                    <li><a href="admin/mobile_app_config/"><?php _e('移动应用'); ?></a></li>
+                    <li class="active"><a href="javascript:void(0);"><?php _e('崩溃日志'); ?></a></li>
+                </ul>
+            </h3>
+        </div>
+
+        <div class="mod-body tab-content">
+            <div class="tab-pane active" id="list">
+
+                <?php if ($_GET['action'] == 'search') { ?>
+                <div class="alert alert-info"><?php _e('找到 %s 条符合条件的内容', intval($this->volunteer_count)); ?></div>
+                <?php } ?>
+
+                <?php if ($this->total_rows == 0) { ?>
+                <div class="alert alert-info"><?php _e('没有任何符合条件的内容'); ?></div>
+                <?php } ?>
+
+                
+                <div class="table-responsive">
+                <form id="batchs_form" action="" method="post">
+                    <input type="hidden" id="action" name="action" value="" />
+                <?php if ($this->list) { ?>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><?php _e('编号'); ?></th>
+                                <th><?php _e('内容'); ?></th>
+                                <th><?php _e('添加时间'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($this->list AS $info) { ?>
+                            <tr>
+                              
+                                <td>
+                                    <?php echo $info['id']; ?>
+                                </td>
+
+                                <td>
+                                   <?php echo $info['content']; ?>
+                                </td>
+
+                                <td>
+                                    <?php echo date_friendly($info['add_time']); ?>
+                                </td>
+
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                <?php } ?>
+                </form>
+                </div>
+
+                <div class="mod-table-foot">
+                    <?php echo $this->pagination; ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<?php TPL::output('admin/global/footer.tpl.htm'); ?>
