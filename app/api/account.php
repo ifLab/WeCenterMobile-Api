@@ -86,7 +86,7 @@ class account extends AWS_CONTROLLER
 				//}
 
 				$this->model('account')->update_user_last_login($user_info['uid']);
-				$this->model('account')->setcookie_logout();
+				$this->model('account')->logout();
 
 				$this->model('account')->setcookie_login($user_info['uid'], $_POST['user_name'], $_POST['password'], $user_info['salt'], $expire);
 
